@@ -3,7 +3,7 @@ pub mod grid {
     use std::{
         collections::HashMap,
         fmt::Display,
-        ops::{Add, Mul},
+        ops::{Add, Mul, Neg, Sub},
     };
 
     #[derive(Clone, Debug)]
@@ -19,6 +19,12 @@ pub mod grid {
         pub y: isize,
     }
 
+    impl Point2 {
+        pub fn zero() -> Self {
+            Point2 { x: 0, y: 0 }
+        }
+    }
+
     impl Add<Point2> for Point2 {
         type Output = Point2;
 
@@ -26,6 +32,28 @@ pub mod grid {
             Point2 {
                 x: self.x + rhs.x,
                 y: self.y + rhs.y,
+            }
+        }
+    }
+
+    impl Sub<Point2> for Point2 {
+        type Output = Point2;
+
+        fn sub(self, rhs: Point2) -> Self::Output {
+            Point2 {
+                x: self.x - rhs.x,
+                y: self.y - rhs.y,
+            }
+        }
+    }
+
+    impl Neg for Point2 {
+        type Output = Point2;
+
+        fn neg(self) -> Self::Output {
+            Point2 {
+                x: -self.x,
+                y: -self.y,
             }
         }
     }
@@ -49,7 +77,7 @@ pub mod grid {
         }
     }
 
-    #[derive(Clone, Copy)]
+    #[derive(Clone, Copy, Debug)]
     pub enum Direction {
         North,
         NorthEast,
@@ -109,6 +137,14 @@ pub mod grid {
     }
 
     impl<V: Copy> Grid<V> {
+        pub fn new() -> Self {
+            Self {
+                map: HashMap::new(),
+                height: 0,
+                width: 0,
+            }
+        }
+
         pub fn from_vec(vec: Vec<Vec<V>>) -> Self {
             let rows = vec.len();
             let cols = vec.iter().map(|l| l.len()).max().unwrap_or_default();
