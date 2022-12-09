@@ -95,14 +95,14 @@ pub mod grid {
 
         pub fn offset(&self) -> Point2 {
             let (x, y) = match self {
-                Direction::North => (-1, 0),
-                Direction::East => (0, 1),
-                Direction::South => (1, 0),
-                Direction::West => (0, -1),
-                Direction::NorthEast => (1, 1),
-                Direction::SouthEast => (1, -1),
-                Direction::SouthWest => (-1, -1),
-                Direction::NorthWest => (-1, 1),
+                Direction::North => (0, -1),
+                Direction::East => (1, 0),
+                Direction::South => (0, 1),
+                Direction::West => (-1, 0),
+                Direction::NorthEast => (-1, 1),
+                Direction::SouthEast => (1, 1),
+                Direction::SouthWest => (-1, 1),
+                Direction::NorthWest => (-1, -1),
             };
             Point2 { x, y }
         }
