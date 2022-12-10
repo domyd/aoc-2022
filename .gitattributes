@@ -1,1 +1,1 @@
-src/input/* text eol=lf
+src/input/* filter=git-crypt diff=git-crypt
