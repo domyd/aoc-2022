@@ -1,6 +1,7 @@
 pub fn sums(input: &str) -> Vec<u32> {
     dbg!(input);
     let blocks: Vec<Vec<u32>> = input
+        .replace("\r\n", "\n")
         .split("\n\n")
         .map(|b| b.lines().map(|l| l.parse().unwrap()).collect())
         .collect();
