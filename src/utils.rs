@@ -145,6 +145,17 @@ pub mod grid {
             }
         }
 
+        pub fn find<P>(&self, predicate: P) -> Option<(Point2, V)>
+        where
+            P: Fn(&V) -> bool,
+        {
+            self.map
+                .iter()
+                .skip_while(|x| !predicate(x.1))
+                .map(|x| (*x.0, *x.1))
+                .next()
+        }
+
         pub fn from_vec(vec: Vec<Vec<V>>) -> Self {
             let rows = vec.len();
             let cols = vec.iter().map(|l| l.len()).max().unwrap_or_default();
