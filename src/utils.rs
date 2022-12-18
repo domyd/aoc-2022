@@ -77,6 +77,74 @@ pub mod grid {
         }
     }
 
+    #[derive(Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Debug)]
+    pub struct Point3 {
+        pub x: isize,
+        pub y: isize,
+        pub z: isize,
+    }
+
+    impl Add<Point3> for Point3 {
+        type Output = Point3;
+
+        fn add(self, rhs: Point3) -> Self::Output {
+            Point3 {
+                x: self.x + rhs.x,
+                y: self.y + rhs.y,
+                z: self.z + rhs.z,
+            }
+        }
+    }
+
+    #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+    pub struct BoundingBox3 {
+        pub lowest: Point3,
+        pub highest: Point3,
+    }
+
+    impl BoundingBox3 {
+        pub fn from_points(points: &[Point3]) -> Self {
+            let (mut min_x, mut max_x, mut min_y, mut max_y, mut min_z, mut max_z) = (
+                isize::MAX,
+                isize::MIN,
+                isize::MAX,
+                isize::MIN,
+                isize::MAX,
+                isize::MIN,
+            );
+            for p in points {
+                min_x = min_x.min(p.x);
+                max_x = max_x.max(p.x);
+
+                min_y = min_y.min(p.y);
+                max_y = max_y.max(p.y);
+
+                min_z = min_z.min(p.z);
+                max_z = max_z.max(p.z);
+            }
+
+            Self {
+                lowest: Point3 {
+                    x: min_x,
+                    y: min_y,
+                    z: min_z,
+                },
+                highest: Point3 {
+                    x: max_x,
+                    y: max_y,
+                    z: max_z,
+                },
+            }
+        }
+
+        pub fn volume(&self) -> usize {
+            let x = self.lowest.x.abs_diff(self.highest.x) + 1;
+            let y = self.lowest.y.abs_diff(self.highest.y) + 1;
+            let z = self.lowest.z.abs_diff(self.highest.z) + 1;
+            x * y * z
+        }
+    }
+
     #[derive(Clone, Copy, Debug)]
     pub enum Direction {
         North,
