@@ -225,19 +225,19 @@ pub mod grid {
         }
 
         pub fn from_vec(vec: Vec<Vec<V>>) -> Self {
-            let rows = vec.len();
-            let cols = vec.iter().map(|l| l.len()).max().unwrap_or_default();
+            let mut map = HashMap::with_capacity(vec.len() * vec.len());
 
-            let mut map = HashMap::with_capacity(rows * cols);
-            for y in 0..rows {
-                for x in 0..cols {
-                    map.insert(
-                        Point2 {
-                            x: x as isize,
-                            y: y as isize,
-                        },
-                        vec[y][x],
-                    );
+            let rows = vec.len();
+            let mut cols = 0;
+
+            for (y_i, row) in vec.into_iter().enumerate() {
+                for (x_i, item) in row.into_iter().enumerate() {
+                    cols = cols.max(x_i);
+                    let p = Point2 {
+                        x: x_i as isize,
+                        y: y_i as isize,
+                    };
+                    map.insert(p, item);
                 }
             }
 
