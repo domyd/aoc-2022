@@ -248,6 +248,24 @@ pub mod grid {
             }
         }
 
+        pub fn row(&self, y: isize) -> Vec<(Point2, &V)> {
+            self.map
+                .keys()
+                .filter(|k| k.y == y)
+                .map(|k| (*k, self.map.get(k).unwrap()))
+                .sorted_by_key(|(p, _)| p.x)
+                .collect()
+        }
+
+        pub fn col(&self, x: isize) -> Vec<(Point2, &V)> {
+            self.map
+                .keys()
+                .filter(|k| k.x == x)
+                .map(|k| (*k, self.map.get(k).unwrap()))
+                .sorted_by_key(|(p, _)| p.y)
+                .collect()
+        }
+
         pub fn line_starting_from<'a>(
             &'a self,
             p: Point2,
