@@ -274,7 +274,7 @@ pub mod grid {
         }
     }
 
-    impl<V: Copy> Grid<V> {
+    impl<V: Clone> Grid<V> {
         pub fn new() -> Self {
             Self {
                 map: HashMap::new(),
@@ -290,7 +290,7 @@ pub mod grid {
             self.map
                 .iter()
                 .skip_while(|x| !predicate(x.1))
-                .map(|x| (*x.0, *x.1))
+                .map(|x| (*x.0, x.1.clone()))
                 .next()
         }
 
@@ -303,7 +303,7 @@ pub mod grid {
             for (y_i, row) in vec.into_iter().enumerate() {
                 for (x_i, item) in row.into_iter().enumerate() {
                     if let Some(item) = item {
-                        cols = cols.max(x_i);
+                        cols = cols.max(x_i + 1);
                         let p = Point2 {
                             x: x_i as isize,
                             y: y_i as isize,
