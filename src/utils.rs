@@ -294,7 +294,7 @@ pub mod grid {
                 .next()
         }
 
-        pub fn from_vec(vec: Vec<Vec<V>>) -> Self {
+        pub fn from_vec(vec: Vec<Vec<Option<V>>>) -> Self {
             let mut map = HashMap::with_capacity(vec.len() * vec.len());
 
             let rows = vec.len();
@@ -302,12 +302,14 @@ pub mod grid {
 
             for (y_i, row) in vec.into_iter().enumerate() {
                 for (x_i, item) in row.into_iter().enumerate() {
-                    cols = cols.max(x_i);
-                    let p = Point2 {
-                        x: x_i as isize,
-                        y: y_i as isize,
-                    };
-                    map.insert(p, item);
+                    if let Some(item) = item {
+                        cols = cols.max(x_i);
+                        let p = Point2 {
+                            x: x_i as isize,
+                            y: y_i as isize,
+                        };
+                        map.insert(p, item);
+                    }
                 }
             }
 

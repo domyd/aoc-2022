@@ -1,17 +1,14 @@
 use crate::utils::grid::{Direction, Grid, Point2};
 use chumsky::prelude::*;
-use std::{collections::VecDeque, fmt::Display};
+use std::{
+    collections::{HashMap, VecDeque},
+    fmt::Display,
+};
 
 #[allow(dead_code)]
 pub fn one(input: &str) -> i32 {
     let (grid, mut instr) = parse(input);
-    let x = grid
-        .row(0)
-        .into_iter()
-        .find(|(_, v)| !matches!(v, Space::Void))
-        .unwrap()
-        .0
-        .x;
+    let x = grid.row(0).into_iter().next().unwrap().0.x;
     let mut pos = Point2 { x, y: 0 };
     let mut dir = Dir::East;
 
@@ -20,7 +17,7 @@ pub fn one(input: &str) -> i32 {
         match instr {
             Instr::Fwd(n) => {
                 for _ in 0..n {
-                    pos = match move_on_map_2d(&grid, pos, dir) {
+                    pos = match move_2d(&grid, pos, dir) {
                         Some(p) => p,
                         None => continue 'outer,
                     };
@@ -60,46 +57,18 @@ fn move_on_map_2d(grid: &Grid<Space>, from: Point2, dir: Dir) -> Option<Point2> 
 
     // figure out the actual position that `next` points to
     let next = match grid.map.get(&next) {
-        None | Some(Space::Void) => match dir {
-            Dir::North => {
-                grid.col(from.x)
-                    .into_iter()
-                    .filter(|(_, v)| !matches!(v, Space::Void))
-                    .last()
-                    .unwrap()
-                    .0
-            }
-            Dir::East => {
-                grid.row(from.y)
-                    .into_iter()
-                    .filter(|(_, v)| !matches!(v, Space::Void))
-                    .next()
-                    .unwrap()
-                    .0
-            }
-            Dir::South => {
-                grid.col(from.x)
-                    .into_iter()
-                    .filter(|(_, v)| !matches!(v, Space::Void))
-                    .next()
-                    .unwrap()
-                    .0
-            }
-            Dir::West => {
-                grid.row(from.y)
-                    .into_iter()
-                    .filter(|(_, v)| !matches!(v, Space::Void))
-                    .last()
-                    .unwrap()
-                    .0
-            }
+        None => match dir {
+            Dir::North => grid.col(from.x).into_iter().last().unwrap().0,
+            Dir::East => grid.row(from.y).into_iter().next().unwrap().0,
+            Dir::South => grid.col(from.x).into_iter().next().unwrap().0,
+            Dir::West => grid.row(from.y).into_iter().last().unwrap().0,
         },
         Some(_) => next,
     };
 
     // check if we can go there
     match grid.map.get(&next) {
-        Some(Space::Void | Space::Empty) => Some(next),
+        Some(Space::Empty) => Some(next),
         Some(Space::Wall) => None,
         None => panic!("can't happen"),
     }
@@ -120,7 +89,6 @@ fn score(pos: Point2, dir: Dir) -> i32 {
 enum Space {
     Wall,
     Empty,
-    Void,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -163,7 +131,6 @@ impl Display for Space {
             match self {
                 Space::Wall => '#',
                 Space::Empty => '.',
-                Space::Void => ' ',
             }
         )
     }
@@ -171,15 +138,15 @@ impl Display for Space {
 
 fn parse(input: &str) -> (Grid<Space>, VecDeque<Instr>) {
     // parse map
-    let grid: Vec<Vec<Space>> = input
+    let grid = input
         .lines()
         .take_while(|l| !l.is_empty())
         .map(|l| {
             l.chars()
                 .map(|c| match c {
-                    '#' => Space::Wall,
-                    '.' => Space::Empty,
-                    ' ' => Space::Void,
+                    '#' => Some(Space::Wall),
+                    '.' => Some(Space::Empty),
+                    ' ' => None,
                     _ => panic!("unknown char"),
                 })
                 .collect()

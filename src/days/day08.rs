@@ -49,7 +49,7 @@ fn parse_grid(input: &str) -> Grid<u32> {
     Grid::from_vec(
         input
             .lines()
-            .map(|l| l.chars().map(|c| c.to_digit(10).unwrap()).collect())
+            .map(|l| l.chars().map(|c| c.to_digit(10)).collect())
             .collect(),
     )
 }

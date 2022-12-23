@@ -99,19 +99,21 @@ fn find_trail(grid: &Grid<Position>, start: Point2) -> Option<usize> {
 }
 
 fn parse(input: &str) -> (Grid<Position>, Point2, Point2) {
-    let input: Vec<Vec<Position>> = input
+    let input = input
         .lines()
         .map(|l| {
             l.chars()
-                .map(|c| Position {
-                    start: c == 'S',
-                    end: c == 'E',
-                    elevation: match c {
-                        'a'..='z' => c as u8 - 97,
-                        'S' => b'a' - 97,
-                        'E' => b'z' - 97,
-                        _ => panic!("input"),
-                    },
+                .map(|c| {
+                    Some(Position {
+                        start: c == 'S',
+                        end: c == 'E',
+                        elevation: match c {
+                            'a'..='z' => c as u8 - 97,
+                            'S' => b'a' - 97,
+                            'E' => b'z' - 97,
+                            _ => panic!("input"),
+                        },
+                    })
                 })
                 .collect()
         })
