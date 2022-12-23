@@ -195,7 +195,7 @@ pub mod grid {
                 Direction::East => (1, 0),
                 Direction::South => (0, 1),
                 Direction::West => (-1, 0),
-                Direction::NorthEast => (-1, 1),
+                Direction::NorthEast => (1, -1),
                 Direction::SouthEast => (1, 1),
                 Direction::SouthWest => (-1, 1),
                 Direction::NorthWest => (-1, -1),
