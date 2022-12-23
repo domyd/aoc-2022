@@ -6,6 +6,8 @@ pub mod grid {
         ops::{Add, Mul, Neg, Sub},
     };
 
+    use itertools::Itertools;
+
     #[derive(Clone, Debug)]
     pub struct Grid<V> {
         pub map: HashMap<Point2, V>,
@@ -92,6 +94,74 @@ pub mod grid {
                 x: self.x + rhs.x,
                 y: self.y + rhs.y,
                 z: self.z + rhs.z,
+            }
+        }
+    }
+
+    #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+    pub struct BoundingBox2 {
+        pub lowest: Point2,
+        pub highest: Point2,
+    }
+
+    impl BoundingBox2 {
+        pub fn from_points(points: impl IntoIterator<Item = Point2>) -> Self {
+            let (mut min_x, mut max_x, mut min_y, mut max_y) =
+                (isize::MAX, isize::MIN, isize::MAX, isize::MIN);
+            for p in points {
+                min_x = min_x.min(p.x);
+                max_x = max_x.max(p.x);
+
+                min_y = min_y.min(p.y);
+                max_y = max_y.max(p.y);
+            }
+
+            Self {
+                lowest: Point2 { x: min_x, y: min_y },
+                highest: Point2 { x: max_x, y: max_y },
+            }
+        }
+
+        pub fn area(&self) -> usize {
+            let x = self.lowest.x.abs_diff(self.highest.x) + 1;
+            let y = self.lowest.y.abs_diff(self.highest.y) + 1;
+            x * y
+        }
+    }
+
+    pub struct BoundingBox2Iterator {
+        bb: BoundingBox2,
+        last: Point2,
+    }
+
+    impl Iterator for BoundingBox2Iterator {
+        type Item = Point2;
+
+        fn next(&mut self) -> Option<Self::Item> {
+            if self.last.x < self.bb.highest.x {
+                self.last.x += 1;
+            } else {
+                self.last.y += 1;
+                self.last.x = self.bb.lowest.x;
+            }
+
+            if self.last.y > self.bb.highest.y {
+                None
+            } else {
+                Some(self.last)
+            }
+        }
+    }
+
+    impl IntoIterator for BoundingBox2 {
+        type Item = Point2;
+
+        type IntoIter = BoundingBox2Iterator;
+
+        fn into_iter(self) -> Self::IntoIter {
+            BoundingBox2Iterator {
+                bb: self,
+                last: self.lowest - Point2 { x: 1, y: 0 },
             }
         }
     }
@@ -312,6 +382,33 @@ pub mod grid {
             }
 
             Ok(())
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn bb2_iter() {
+            let bb = BoundingBox2 {
+                lowest: Point2 { x: 1, y: 2 },
+                highest: Point2 { x: 3, y: 4 },
+            };
+            let points = bb.into_iter().collect::<Vec<_>>();
+            let expected = [
+                (1, 2),
+                (2, 2),
+                (3, 2),
+                (1, 3),
+                (2, 3),
+                (3, 3),
+                (1, 4),
+                (2, 4),
+                (3, 4),
+            ]
+            .map(|(x, y)| Point2 { x, y });
+            assert_eq!(&expected, &points[..]);
         }
     }
 }
