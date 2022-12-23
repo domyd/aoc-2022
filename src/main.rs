@@ -5,7 +5,7 @@ mod utils;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let input = std::fs::read_to_string("src/input/example.txt").unwrap();
+    let input = std::fs::read_to_string("src/input/example").unwrap();
     let result = match args.into_iter().skip(1).next().map(|n| n.parse::<usize>()) {
         Some(Ok(1)) => days::day23::one(&input),
         Some(Ok(2)) => days::day23::two(&input),

@@ -1,1 +1,1 @@
-src/input/* filter=git-crypt diff=git-crypt
+src/input/*.txt filter=git-crypt diff=git-crypt
