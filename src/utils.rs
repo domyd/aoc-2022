@@ -122,6 +122,13 @@ pub mod grid {
             }
         }
 
+        pub fn contains(&self, point: &Point2) -> bool {
+            point.x >= self.lowest.x
+                && point.x <= self.highest.x
+                && point.y >= self.lowest.y
+                && point.y <= self.highest.y
+        }
+
         pub fn area(&self) -> usize {
             let x = self.lowest.x.abs_diff(self.highest.x) + 1;
             let y = self.lowest.y.abs_diff(self.highest.y) + 1;
@@ -205,6 +212,15 @@ pub mod grid {
                     z: max_z,
                 },
             }
+        }
+
+        pub fn contains(&self, point: &Point3) -> bool {
+            point.x >= self.lowest.x
+                && point.x <= self.highest.x
+                && point.y >= self.lowest.y
+                && point.y <= self.highest.y
+                && point.z >= self.lowest.z
+                && point.z <= self.highest.z
         }
 
         pub fn volume(&self) -> usize {
